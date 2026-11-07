@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>רגע שלי</title>
+  <meta name="description" content="יומן אישי קטן: משפט אחד או הקלטה קצרה, גם ביום עמוס.">
+  <meta name="theme-color" content="#F6EFE4">
+  <meta name="color-scheme" content="light">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="רגע שלי">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="preload" href="fonts/rubik-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/playpen-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+
+  <!-- מסך הבית -->
+  <main id="home" class="home" aria-label="רגע שלי">
+    <header class="home__head">
+      <h1 class="wordmark">רגע שלי<span class="wordmark__dot" aria-hidden="true"></span></h1>
+      <p class="home__date" id="today"></p>
+    </header>
+
+    <button class="collection" id="collection" type="button" aria-label="הרגעים שלי">
+      <span class="collection__field" id="dots" aria-hidden="true">
+        <span class="collection__empty"></span>
+      </span>
+      <span class="collection__caption" id="collectionCaption">הרגע הראשון שלך יופיע כאן</span>
+    </button>
+
+    <div class="actions">
+      <button class="big-btn big-btn--write" id="btnWrite" type="button">
+        <span class="big-btn__icon" id="btnWriteIcon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 19.5l1-4.2L15.8 5a2.1 2.1 0 0 1 3 3L8.6 18.4l-4.1 1.1z"/><path d="M13.9 6.9l3 3"/></svg>
+        </span>
+        <span class="big-btn__text">
+          <span class="big-btn__label">לכתוב רגע</span>
+          <span class="big-btn__hint" id="writeHint">מספיק משפט אחד</span>
+        </span>
+      </button>
+
+      <button class="big-btn big-btn--record" id="btnRecord" type="button">
+        <span class="big-btn__icon" id="btnRecordIcon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11.5" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/></svg>
+        </span>
+        <span class="big-btn__text">
+          <span class="big-btn__label">להקליט רגע</span>
+          <span class="big-btn__hint">מספיקות חמש שניות</span>
+        </span>
+      </button>
+    </div>
+
+    <p class="prompt" id="prompt"></p>
+
+    <a class="journal-link" id="journalLink" href="#journal">
+      <span>הרגעים שלי</span>
+      <span class="journal-link__arrow" aria-hidden="true">←</span>
+    </a>
+  </main>
+
+  <!-- יומן: הרגעים שלי -->
+  <section id="journal" class="journal" aria-label="הרגעים שלי" hidden>
+    <header class="journal__head">
+      <button class="icon-btn" id="journalBack" type="button" aria-label="חזרה">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+      </button>
+      <h2 class="journal__title">הרגעים שלי <span class="journal__count" id="journalCount"></span></h2>
+      <button class="text-btn" id="backupBtn" type="button">גיבוי</button>
+    </header>
+    <div class="journal__list" id="journalList"></div>
+    <div class="journal__empty" id="journalEmpty" hidden>
+      <p>עוד אין כאן רגעים.</p>
+      <button class="btn btn--primary" id="emptyWrite" type="button">לכתוב רגע ראשון</button>
+    </div>
+  </section>
+
+  <!-- כתיבה -->
+  <section id="writer" class="sheet sheet--writer" role="dialog" aria-modal="true" aria-labelledby="writerTitle" hidden>
+    <header class="sheet__head">
+      <button class="text-btn" id="writerClose" type="button">סגירה</button>
+      <span class="sheet__title" id="writerTitle">רגע חדש</span>
+      <span class="sheet__meta" id="writerMeta"></span>
+    </header>
+    <div class="writer__audio" id="writerAudio" hidden></div>
+    <div class="writer__paper">
+      <textarea id="writerText" class="writer__text" dir="rtl" autocomplete="off" autocapitalize="sentences" spellcheck="true" aria-label="הטקסט של הרגע"></textarea>
+    </div>
+    <footer class="sheet__foot">
+      <button class="save-btn" id="writerSave" type="button" disabled>לשמור</button>
+      <span class="draft-status" id="draftStatus" aria-live="polite"></span>
+    </footer>
+  </section>
+
+  <!-- הקלטה -->
+  <section id="recorder" class="sheet sheet--recorder" role="dialog" aria-modal="true" aria-label="הקלטה" hidden>
+    <header class="sheet__head">
+      <button class="text-btn" id="recCancel" type="button">ביטול</button>
+      <span class="sheet__title">הקלטה</span>
+      <span class="sheet__meta"></span>
+    </header>
+
+    <div class="rec__body" id="recBody">
+      <div class="rec__orb" id="recOrb" aria-hidden="true">
+        <span class="rec__halo"></span>
+        <span class="rec__core">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11.5" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/></svg>
+        </span>
+      </div>
+      <div class="rec__time" id="recTime" role="timer" aria-live="off">0:00</div>
+      <div class="rec__status" id="recStatus" aria-live="polite">מחכים לאישור למיקרופון…</div>
+    </div>
+
+    <div class="rec__blocked" id="recBlocked" hidden>
+      <div class="rec__blocked-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11.5" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/><path d="M4 4l16 16"/></svg>
+      </div>
+      <h2 class="rec__blocked-title" id="recBlockedTitle">המיקרופון חסום</h2>
+      <p class="rec__blocked-text" id="recBlockedText"></p>
+      <button class="btn btn--primary" id="recToWrite" type="button">לכתוב רגע במקום</button>
+      <button class="btn btn--soft" id="recRetry" type="button">לנסות שוב</button>
+    </div>
+
+    <footer class="rec__foot" id="recFoot">
+      <button class="stop-btn" id="recStop" type="button" disabled>
+        <span class="stop-btn__square" aria-hidden="true"></span>
+        <span>לעצור ולשמור</span>
+      </button>
+    </footer>
+  </section>
+
+  <!-- גיבוי -->
+  <div class="modal" id="backupModal" hidden>
+    <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="backupTitle">
+      <h2 class="modal__title" id="backupTitle">גיבוי</h2>
+      <p class="modal__text">הרגעים נשמרים רק במכשיר הזה. כדאי לשמור קובץ גיבוי מדי פעם, בקבצים, במייל או בוואטסאפ לעצמך.</p>
+      <p class="modal__note" id="lastBackup"></p>
+      <div class="modal__actions">
+        <button class="btn btn--primary" id="exportBtn" type="button">ליצור קובץ גיבוי</button>
+        <button class="btn btn--primary" id="exportSaveBtn" type="button" hidden>לשמור את הקובץ</button>
+        <button class="btn btn--soft" id="importBtn" type="button">לשחזר מקובץ גיבוי</button>
+        <input type="file" id="importInput" hidden>
+        <p class="modal__status" id="backupStatus" aria-live="polite"></p>
+        <button class="text-btn text-btn--center" id="backupClose" type="button">סגירה</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- אישור -->
+  <div class="modal" id="confirmModal" hidden>
+    <div class="modal__card" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <h2 class="modal__title" id="confirmTitle"></h2>
+      <p class="modal__text" id="confirmText"></p>
+      <div class="modal__actions">
+        <button class="btn btn--primary" id="confirmOk" type="button"></button>
+        <button class="btn btn--soft" id="confirmCancel" type="button"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <noscript><p class="noscript">כדי להשתמש ב״רגע שלי״ צריך לאפשר ג׳אווה סקריפט.</p></noscript>
+</body>
+</html>
